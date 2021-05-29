@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "isolatedModules": false,
+    "lib": ["DOM", "ES2020", "WebWorker"],
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "lib/*": ["lib/*"]
+    }
+  },
+  "include": ["src/**/*", "lib"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+}
