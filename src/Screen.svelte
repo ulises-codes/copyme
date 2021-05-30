@@ -7,7 +7,7 @@
 
   $: backgroundColor =
     !$isPlaying && $score > 0
-      ? '#804533'
+      ? '#802C33'
       : $isDemonstrating
       ? '#000D40'
       : '#263880'
