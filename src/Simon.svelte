@@ -2,7 +2,7 @@
   import { demonstrate, setBestScore } from './lib/helper.svelte'
   import Pad from './Pad.svelte'
   import Screen from './Screen.svelte'
-  import GameWorker from 'web-worker:./util/worker.ts'
+  import GameWorkerURL from 'omt:./util/worker.ts'
 
   import { isDemonstrating, score, isPlaying, activePad } from './util/store'
   import { onDestroy } from 'svelte'
@@ -45,7 +45,10 @@
     }
   }
 
-  const gameWorker = new GameWorker()
+  const gameWorker = new Worker(`./build/${GameWorkerURL}`, {
+    type: 'module',
+    name: 'game-worker',
+  })
 
   gameWorker.onmessage = handleMessage
 

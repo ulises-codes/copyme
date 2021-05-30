@@ -1,15 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { getBestScore } from './lib/helper.svelte'
-
   import Simon from './Simon.svelte'
-  import { bestScore } from './util/store'
-
-  onMount(() => {
-    const savedScore = getBestScore()
-
-    // bestScore.set(parseInt(savedScore) ?? 0)
-  })
 </script>
 
 <main>

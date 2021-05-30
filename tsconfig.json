@@ -5,6 +5,7 @@
     "isolatedModules": false,
     "lib": ["DOM", "ES2020", "WebWorker"],
     "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
     "paths": {
       "lib/*": ["lib/*"]
     }
