@@ -6,7 +6,7 @@ function resetGame(init?: boolean) {
   tapOrder = []
 }
 
-function demonstrateMoves(move?: number, delay: number = 0) {
+function demonstrateMove(move?: number, delay: number = 0) {
   const timeout = setTimeout(() => {
     postMessage({
       action: 'demonstrate',
@@ -24,8 +24,8 @@ function generateMove(): number {
 function startGame() {
   resetGame(true)
 
-  demonstrateMoves(moves[0])
-  demonstrateMoves(undefined, 1000)
+  demonstrateMove(moves[0])
+  demonstrateMove(undefined, 1000)
 }
 
 function play(padPosition: number) {
@@ -51,7 +51,7 @@ function addMove(): void {
   moves.push(move)
 
   for (let i = 0; i <= moves.length; i++) {
-    demonstrateMoves(moves[i], i * 700)
+    demonstrateMove(moves[i], i * (700 - moves.length * 20))
   }
 }
 

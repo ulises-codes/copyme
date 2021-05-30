@@ -1,5 +1,8 @@
 <script context="module" lang="ts">
-  import { getMusicalNote } from '../lib/helper.svelte'
+  interface SynthProps {
+    type: OscillatorNode['type']
+    pitchOffset?: number
+  }
 
   const audioCtx = new AudioContext()
 
@@ -7,44 +10,62 @@
 
   gainNode.connect(audioCtx.destination)
 
-  let oscillator: OscillatorNode
+  const synths: SynthProps[] = [
+    { type: 'triangle' },
+    { type: 'sawtooth' },
+    { type: 'triangle', pitchOffset: 12 },
+    { type: 'sawtooth' },
+  ]
 
-  export function playSound(activePad: number, duration: number = 0.4) {
-    gainNode.gain.cancelScheduledValues(audioCtx.currentTime)
+  let oscillators: OscillatorNode[] = []
 
-    const note = getMusicalNote(activePad)
+  function connectSynth({ type, pitchOffset }: SynthProps, activePad: number) {
+    const note = getMusicalNote(activePad, pitchOffset)
 
-    oscillator = audioCtx.createOscillator()
-    oscillator.type = 'sawtooth'
-
+    const oscillator = audioCtx.createOscillator()
+    oscillator.type = type
+    oscillator.frequency.setValueAtTime(note, audioCtx.currentTime)
     oscillator.connect(gainNode)
 
-    gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.01)
-    oscillator.frequency.setValueAtTime(note, audioCtx.currentTime)
+    oscillators.push(oscillator)
+  }
 
-    oscillator.start()
+  export function playSound(activePad: number) {
+    oscillators = []
+    synths.forEach(synth => connectSynth(synth, activePad))
+
+    gainNode.gain.cancelScheduledValues(audioCtx.currentTime)
+
+    gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.05)
+
+    oscillators.forEach(oscillator => oscillator.start())
 
     stopSound()
   }
 
   export function stopSound(
     releaseTime: number = 0.05,
-    releaseDuration: number = 0.05
+    releaseDuration: number = 0.17
   ) {
-    if (oscillator) {
+    if (oscillators.length > 0) {
       gainNode.gain.setValueCurveAtTime(
-        [gainNode.gain.value, 0.1, 0.05, 0.03, 0.001],
+        [gainNode.gain.value, 0.05, 0.001],
         audioCtx.currentTime + releaseTime,
         releaseDuration
       )
-      //   gainNode.gain.exponentialRampToValueAtTime(
-      //     0.01,
-      //     audioCtx.currentTime + time
-      //   )
 
-      oscillator.stop(
-        audioCtx.currentTime + releaseDuration + releaseTime + 0.01
+      oscillators.forEach(oscillator =>
+        oscillator.stop(
+          audioCtx.currentTime + releaseDuration + releaseTime + 0.02
+        )
       )
     }
+  }
+
+  function getMusicalNote(activePad: number, offset?: number) {
+    const semitones =
+      activePad === 1 ? 4 : activePad === 2 ? 7 : activePad === 3 ? 9 : 0
+
+    return 440 * Math.pow(Math.pow(2, 1 / 12), semitones + (offset ?? 0))
   }
 </script>

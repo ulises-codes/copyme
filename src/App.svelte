@@ -1,29 +1,25 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import { getBestScore } from './lib/helper.svelte'
+
   import Simon from './Simon.svelte'
+  import { bestScore } from './util/store'
+
+  onMount(() => {
+    const savedScore = getBestScore()
+
+    // bestScore.set(parseInt(savedScore) ?? 0)
+  })
 </script>
 
 <main>
   <Simon />
 </main>
-
-<style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
-  }
-
-  /* h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
-  } */
-
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
-  }
-</style>
+<footer>
+  <small>
+    <span>©{new Date().getFullYear()} |</span>
+    <a href="https://ulises.codes" target="_blank" rel="noopener">
+      Ulises Himely
+    </a>
+  </small>
+</footer>

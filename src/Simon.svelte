@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { demonstrate } from './lib/helper.svelte'
+  import { demonstrate, setBestScore } from './lib/helper.svelte'
   import Pad from './Pad.svelte'
   import Screen from './Screen.svelte'
   import GameWorker from 'web-worker:./util/worker.ts'
@@ -23,7 +23,7 @@
     switch (e.data.action) {
       case 'demonstrate':
         isDemonstrating.set(true)
-        demonstrate(e.data.payload)
+        demonstrate(e.data.payload, 600 - $score * 20)
 
         break
 
@@ -34,7 +34,12 @@
         break
 
       case 'score':
-        score.update(value => value + 1)
+        score.update(value => {
+          const newScore = value + 1
+
+          setBestScore(newScore)
+          return newScore
+        })
 
         break
     }
@@ -83,12 +88,14 @@
     --blue: blue;
     --dark-black: #171717;
 
-    position: absolute;
-    height: 540px;
-    width: 540px;
+    max-width: 540px;
+    max-height: 540px;
+    height: 90vw;
+    width: 90vw;
     background-color: var(--black);
     border-radius: 50%;
     margin: auto;
+    position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
@@ -99,12 +106,12 @@
   }
 
   .game-wrapper {
-    height: 100%;
-    width: 100%;
     display: grid;
     gap: var(--gap);
     grid-template: repeat(2, 1fr) / repeat(2, 1fr);
     border-radius: 50%;
     position: relative;
+    height: 100%;
+    width: 100%;
   }
 </style>

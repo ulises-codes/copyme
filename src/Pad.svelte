@@ -1,6 +1,6 @@
 <script lang="ts">
   import { spring } from 'svelte/motion'
-  import { playSound, stopSound } from './util/Audio.svelte'
+  import { playSound } from './util/Audio.svelte'
   import { activePad, isDemonstrating } from './util/store'
 
   export let padColor: string
@@ -35,8 +35,6 @@
   const deactivatePad = () => {
     if (!$isDemonstrating && isPressed) {
       activePad.set(undefined)
-
-      stopSound()
     }
   }
 
@@ -63,6 +61,11 @@
   />
   <path
     class="pad-path"
+    on:touchstart|preventDefault={handlePress}
+    on:touchend|preventDefault={() => {
+      deactivatePad()
+      play(padPosition)
+    }}
     on:click|preventDefault={() => play(padPosition)}
     on:mousedown|preventDefault={handlePress}
     on:mouseup|preventDefault={deactivatePad}
