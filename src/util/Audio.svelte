@@ -4,11 +4,15 @@
     pitchOffset?: number
   }
 
+  const MAX_VOLUME = 0.3
+
   const audioCtx = new AudioContext()
 
   const gainNode = audioCtx.createGain()
 
   gainNode.connect(audioCtx.destination)
+
+  gainNode.gain.setValueAtTime(audioCtx.currentTime, MAX_VOLUME)
 
   const synths: SynthProps[] = [
     { type: 'triangle' },
@@ -16,7 +20,6 @@
     { type: 'triangle', pitchOffset: 12 },
     { type: 'sawtooth' },
   ]
-
   let oscillators: OscillatorNode[] = []
 
   function connectSynth({ type, pitchOffset }: SynthProps, activePad: number) {
@@ -34,9 +37,14 @@
     oscillators = []
     synths.forEach(synth => connectSynth(synth, activePad))
 
+    console.log(gainNode.gain.value)
+
     gainNode.gain.cancelScheduledValues(audioCtx.currentTime)
 
-    gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.05)
+    gainNode.gain.linearRampToValueAtTime(
+      MAX_VOLUME,
+      audioCtx.currentTime + 0.05
+    )
 
     oscillators.forEach(oscillator => oscillator.start())
 
@@ -49,7 +57,7 @@
   ) {
     if (oscillators.length > 0) {
       gainNode.gain.setValueCurveAtTime(
-        [gainNode.gain.value, 0.05, 0.001],
+        [Math.min(MAX_VOLUME, gainNode.gain.value), 0.05, 0.001],
         audioCtx.currentTime + releaseTime,
         releaseDuration
       )
